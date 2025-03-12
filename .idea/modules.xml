@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/eacg-project.iml" filepath="$PROJECT_DIR$/eacg-project.iml" />
-      <module fileurl="file://$PROJECT_DIR$/school-service/school-service.iml" filepath="$PROJECT_DIR$/school-service/school-service.iml" />
     </modules>
   </component>
 </project>
