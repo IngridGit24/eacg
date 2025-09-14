@@ -1,0 +1,373 @@
+version: '3.8'
+
+services:
+  # Infrastructure Services
+  eureka-server:
+    image: eureka-server:latest
+    build: ./eureka-server
+    ports:
+      - "8761:8761"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - eacg-network
+
+  config-server:
+    image: config-server:latest
+    build: ./config-server
+    ports:
+      - "8888:8888"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - eacg-network
+
+  api-gateway:
+    image: api-gateway:latest
+    build: ./api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka
+    depends_on:
+      - eureka-server
+    networks:
+      - eacg-network
+
+  # Core Services
+  school-service:
+    image: school-service:latest
+    build: ./school-service
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-school:5432/school_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=password
+    depends_on:
+      - eureka-server
+      - postgres-school
+    networks:
+      - eacg-network
+
+  student-service:
+    image: student-service:latest
+    build: ./student-service
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-student:5432/student_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=password
+    depends_on:
+      - eureka-server
+      - postgres-student
+    networks:
+      - eacg-network
+
+  enrollment-service:
+    image: enrollment-service:latest
+    build: ./enrollment-service
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-enrollment:5432/enrollment_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=password
+    depends_on:
+      - eureka-server
+      - postgres-enrollment
+    networks:
+      - eacg-network
+
+  payment-service:
+    image: payment-service:latest
+    build: ./payment-service
+    ports:
+      - "8084:8084"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-payment:5432/payment_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=password
+    depends_on:
+      - eureka-server
+      - postgres-payment
+    networks:
+      - eacg-network
+
+  academic-service:
+    image: academic-service:latest
+    build: ./academic-service
+    ports:
+      - "8085:8085"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-academic:5432/academic_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=password
+    depends_on:
+      - eureka-server
+      - postgres-academic
+    networks:
+      - eacg-network
+
+  assessment-service:
+    image: assessment-service:latest
+    build: ./assessment-service
+    ports:
+      - "8086:8086"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-assessment:5432/assessment_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=password
+    depends_on:
+      - eureka-server
+      - postgres-assessment
+    networks:
+      - eacg-network
+
+  notification-service:
+    image: notification-service:latest
+    build: ./notification-service
+    ports:
+      - "8087:8087"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/notification_db
+    depends_on:
+      - eureka-server
+      - mongodb
+    networks:
+      - eacg-network
+
+  user-management-service:
+    image: user-management-service:latest
+    build: ./user-management-service
+    ports:
+      - "8088:8088"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-user:5432/user_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=password
+    depends_on:
+      - eureka-server
+      - postgres-user
+    networks:
+      - eacg-network
+
+  reporting-service:
+    image: reporting-service:latest
+    build: ./reporting-service
+    ports:
+      - "8089:8089"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-reporting:5432/reporting_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PORT=6379
+    depends_on:
+      - eureka-server
+      - postgres-reporting
+      - redis
+    networks:
+      - eacg-network
+
+  file-management-service:
+    image: file-management-service:latest
+    build: ./file-management-service
+    ports:
+      - "8090:8090"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-file:5432/file_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=password
+      - MINIO_ENDPOINT=http://minio:9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+    depends_on:
+      - eureka-server
+      - postgres-file
+      - minio
+    networks:
+      - eacg-network
+
+  # Databases
+  postgres-school:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=school_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - postgres_school_data:/var/lib/postgresql/data
+    networks:
+      - eacg-network
+
+  postgres-student:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=student_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - postgres_student_data:/var/lib/postgresql/data
+    networks:
+      - eacg-network
+
+  postgres-enrollment:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=enrollment_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - postgres_enrollment_data:/var/lib/postgresql/data
+    networks:
+      - eacg-network
+
+  postgres-payment:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=payment_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - postgres_payment_data:/var/lib/postgresql/data
+    networks:
+      - eacg-network
+
+  postgres-academic:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=academic_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - postgres_academic_data:/var/lib/postgresql/data
+    networks:
+      - eacg-network
+
+  postgres-assessment:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=assessment_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - postgres_assessment_data:/var/lib/postgresql/data
+    networks:
+      - eacg-network
+
+  postgres-user:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=user_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - postgres_user_data:/var/lib/postgresql/data
+    networks:
+      - eacg-network
+
+  postgres-reporting:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=reporting_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - postgres_reporting_data:/var/lib/postgresql/data
+    networks:
+      - eacg-network
+
+  postgres-file:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=file_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - postgres_file_data:/var/lib/postgresql/data
+    networks:
+      - eacg-network
+
+  mongodb:
+    image: mongo:6
+    environment:
+      - MONGO_INITDB_DATABASE=notification_db
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - eacg-network
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data
+    networks:
+      - eacg-network
+
+  minio:
+    image: minio/minio:latest
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    networks:
+      - eacg-network
+
+  # Frontend
+  frontend:
+    image: eacg-frontend:latest
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:8080
+    depends_on:
+      - api-gateway
+    networks:
+      - eacg-network
+
+volumes:
+  postgres_school_data:
+  postgres_student_data:
+  postgres_enrollment_data:
+  postgres_payment_data:
+  postgres_academic_data:
+  postgres_assessment_data:
+  postgres_user_data:
+  postgres_reporting_data:
+  postgres_file_data:
+  mongodb_data:
+  redis_data:
+  minio_data:
+
+networks:
+  eacg-network:
+    driver: bridge

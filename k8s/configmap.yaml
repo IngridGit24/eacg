@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eacg-config
+  namespace: eacg-platform
+data:
+  EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: "http://eureka-server:8761/eureka"
+  SPRING_PROFILES_ACTIVE: "k8s"
+  POSTGRES_USER: "postgres"
+  POSTGRES_PASSWORD: "password"
+  MINIO_ACCESS_KEY: "minioadmin"
+  MINIO_SECRET_KEY: "minioadmin"
+  MINIO_ENDPOINT: "http://minio:9000"
